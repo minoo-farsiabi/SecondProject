@@ -25,7 +25,7 @@ public class ServerThread extends Thread {
             ObjectOutputStream objectOutputStream = new ObjectOutputStream(outputStream);
 
             while (true) {
-                Object command = (Object) objectInputStream.readObject();
+                Object command = objectInputStream.readObject();
 
                 if (command instanceof Transaction) {
                     Transaction transaction = (Transaction) command;

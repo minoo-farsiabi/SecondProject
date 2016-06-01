@@ -25,20 +25,19 @@ public class ServerParser {
         JSONParser jsonParser = new JSONParser();
 
         int port;
-        String customer = null;
-        String id = null;
-        String initialBalance = null;
-        String upperBound = null;
-        String outLog = null;
+        String customer;
+        String id;
+        String initialBalance;
+        String upperBound;
+        String outLog;
         List<Deposit> allDeposits = new ArrayList<Deposit>();
 
         try {
             JSONObject jsonObject = (JSONObject) jsonParser.parse(jsonFile);
             port = ((Long) jsonObject.get("port")).intValue();
             JSONArray jsonArray = (JSONArray) jsonObject.get("deposits");
-            Iterator iterator = jsonArray.iterator();
-            while (iterator.hasNext()) {
-                JSONObject deposit = (JSONObject) iterator.next();
+            for (Object aJsonArray : jsonArray) {
+                JSONObject deposit = (JSONObject) aJsonArray;
                 customer = (String) deposit.get("customer");
                 id = (String) deposit.get("id");
                 initialBalance = (String) deposit.get("initialBalance");

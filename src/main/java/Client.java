@@ -12,7 +12,6 @@ import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 import java.io.*;
 import java.net.Socket;
-import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -26,17 +25,17 @@ public class Client {
         try {
             ClientParser clientParser = new ClientParser();
             clientParser.parseTerminalFile();
-            clientParser.clientModel.saveOutLog("Reading terminal.xml completed.\n");
+            ClientParser.clientModel.saveOutLog("Reading terminal.xml completed.\n");
 
-            String serverIP = clientParser.clientModel.getServerIP();
-            String serverPort = clientParser.clientModel.getServerPort();
+            String serverIP = ClientParser.clientModel.getServerIP();
+            String serverPort = ClientParser.clientModel.getServerPort();
 
             List<TransactionResponse> allTransactionResponses = new ArrayList<TransactionResponse>();
 
             System.out.println("Attempting to connect to host " + serverIP + " on port " + serverPort);
             clientSocket = new Socket(serverIP, Integer.parseInt(serverPort));
             System.out.println("Connected Successfully");
-            clientParser.clientModel.saveOutLog("Connection successful\n");
+            ClientParser.clientModel.saveOutLog("Connection successful\n");
 
             OutputStream outputStream = clientSocket.getOutputStream();
             ObjectOutputStream objectOutputStream = new ObjectOutputStream(outputStream);
@@ -44,13 +43,13 @@ public class Client {
             InputStream inputStream = clientSocket.getInputStream();
             ObjectInputStream objectInputStream = new ObjectInputStream(inputStream);
 
-            for (Transaction transaction : clientParser.clientModel.getTransactions()) {
+            for (Transaction transaction : ClientParser.clientModel.getTransactions()) {
                 objectOutputStream.writeObject(transaction);
-                clientParser.clientModel.saveOutLog("transaction #" + transaction.getId() + " of type " + transaction.getType() + " performed: Deposit No. " + transaction.getDeposit() + " Amount: " + transaction.getAmount() + "\n");
+                ClientParser.clientModel.saveOutLog("transaction #" + transaction.getId() + " of type " + transaction.getType() + " performed: Deposit No. " + transaction.getDeposit() + " Amount: " + transaction.getAmount() + "\n");
                 TransactionResponse transactionResponse = (TransactionResponse) objectInputStream.readObject();
                 if (transactionResponse != null) {
                     System.out.println("response: " + transactionResponse.getMessage());
-                    clientParser.clientModel.saveOutLog("Response of transaction #" + transactionResponse.getId() + ": result code: " + transactionResponse.getResultCode() + " message: " + transactionResponse.getMessage() + "\n");
+                    ClientParser.clientModel.saveOutLog("Response of transaction #" + transactionResponse.getId() + ": result code: " + transactionResponse.getResultCode() + " message: " + transactionResponse.getMessage() + "\n");
                     allTransactionResponses.add(transactionResponse);
                 }
                 //update logfile
@@ -58,13 +57,13 @@ public class Client {
 
             keepResponseRecord(allTransactionResponses);
 
-            objectOutputStream.writeObject(new String("exit"));
-            clientParser.clientModel.saveOutLog("Commands finished.\n");
+            objectOutputStream.writeObject("exit");
+            ClientParser.clientModel.saveOutLog("Commands finished.\n");
 
             objectOutputStream.close();
             outputStream.close();
             clientSocket.close();
-            clientParser.clientModel.saveOutLog("client is shutting down.\n");
+            ClientParser.clientModel.saveOutLog("client is shutting down.\n");
 
         } catch (IOException e) {
             e.printStackTrace();

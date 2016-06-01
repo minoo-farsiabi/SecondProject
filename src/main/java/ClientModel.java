@@ -23,40 +23,6 @@ public class ClientModel {
         this.transactions = transactions;
     }
 
-    public void setTerminalId(String terminalId) {
-
-        this.terminalId = terminalId;
-    }
-
-    public void setType(String type) {
-        this.type = type;
-    }
-
-    public void setServerIP(String serverIP) {
-        this.serverIP = serverIP;
-    }
-
-    public void setServerPort(String serverPort) {
-        this.serverPort = serverPort;
-    }
-
-    public void setPath(String path) {
-        this.path = path;
-    }
-
-    public void setTransactions(List<Transaction> transactions) {
-        this.transactions = transactions;
-    }
-
-    public String getTerminalId() {
-
-        return terminalId;
-    }
-
-    public String getType() {
-        return type;
-    }
-
     public String getServerIP() {
         return serverIP;
     }

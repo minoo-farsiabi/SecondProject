@@ -43,7 +43,7 @@ public class ClientParser {
             for (int temp = 0; temp < terminalList.getLength(); temp++) {
 
                 Node terminalNode = terminalList.item(temp);
-                if (terminalNode.getNodeType() == terminalNode.ELEMENT_NODE) {
+                if (terminalNode.getNodeType() == Node.ELEMENT_NODE) {
                     Element element = (Element) terminalNode;
                     if (element.hasAttribute("id")) {
                         terminalId = element.getAttribute("id");
@@ -96,7 +96,7 @@ public class ClientParser {
                     Element element = (Element) transactionsNode;
                     for (int j = 0; j < element.getElementsByTagName("transaction").getLength(); j++) {
                         Node transactionNode = element.getElementsByTagName("transaction").item(j);
-                        if (transactionNode.getNodeType() == transactionNode.ELEMENT_NODE) {
+                        if (transactionNode.getNodeType() == Node.ELEMENT_NODE) {
                             Element transactionElement = (Element) transactionNode;
                             String id = null;
                             String type = null;
