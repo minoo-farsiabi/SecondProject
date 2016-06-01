@@ -5,6 +5,7 @@ import org.json.simple.parser.ParseException;
 
 import java.io.FileReader;
 import java.io.IOException;
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -18,10 +19,9 @@ public class ServerParser {
 
     public ServerParser(FileReader jsonFile) {
         this.jsonFile = jsonFile;
-
-        parseJSON();
     }
-    private void parseJSON () {
+
+    public void parseJSON() {
         JSONParser jsonParser = new JSONParser();
 
         int port;
@@ -34,24 +34,23 @@ public class ServerParser {
 
         try {
             JSONObject jsonObject = (JSONObject) jsonParser.parse(jsonFile);
-            port = ((Long)jsonObject.get("port")).intValue();
+            port = ((Long) jsonObject.get("port")).intValue();
             JSONArray jsonArray = (JSONArray) jsonObject.get("deposits");
             Iterator iterator = jsonArray.iterator();
-            while (iterator.hasNext()){
+            while (iterator.hasNext()) {
                 JSONObject deposit = (JSONObject) iterator.next();
                 customer = (String) deposit.get("customer");
                 id = (String) deposit.get("id");
                 initialBalance = (String) deposit.get("initialBalance");
                 upperBound = (String) deposit.get("upperBound");
                 if (customer != null && id != null && initialBalance != null && upperBound != null) {
-                    Deposit newDeposit = new Deposit(customer, id, initialBalance , upperBound);
+                    Deposit newDeposit = new Deposit(customer, id, new BigDecimal(initialBalance), new BigDecimal(upperBound));
                     allDeposits.add(newDeposit);
                 }
             }
             outLog = (String) jsonObject.get("outLog");
-            if (port != 0 && allDeposits.size()!= 0 && outLog != null) {
-                serverModel = new ServerModel(port,allDeposits,outLog);
-                System.err.println("injaaa");
+            if (port != 0 && allDeposits.size() != 0 && outLog != null) {
+                serverModel = new ServerModel(port, allDeposits, outLog);
             }
         } catch (IOException e) {
             e.printStackTrace();

@@ -1,3 +1,6 @@
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.RandomAccessFile;
 import java.util.List;
 
 /**
@@ -68,5 +71,20 @@ public class ClientModel {
 
     public List<Transaction> getTransactions() {
         return transactions;
+    }
+
+    public void saveOutLog(String line) {
+        System.err.println(line);
+        try {
+            RandomAccessFile outLogFile = new RandomAccessFile(ClientParser.clientModel.getPath(), "rw");
+            outLogFile.seek(outLogFile.length());
+            outLogFile.write(line.getBytes());
+            outLogFile.close();
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
     }
 }

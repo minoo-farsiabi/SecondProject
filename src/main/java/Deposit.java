@@ -1,13 +1,15 @@
+import java.math.BigDecimal;
+
 /**
  * Created by m.farsiabi on 5/29/2016.
  */
 public class Deposit {
     private String customer;
     private String id;
-    private String initialBalance;
-    private String upperBound;
+    private BigDecimal initialBalance;
+    private BigDecimal upperBound;
 
-    public Deposit(String customer, String id, String initialBalance, String upperBound) {
+    public Deposit(String customer, String id, BigDecimal initialBalance, BigDecimal upperBound) {
         this.customer = customer;
         this.id = id;
         this.initialBalance = initialBalance;
@@ -22,11 +24,19 @@ public class Deposit {
         return id;
     }
 
-    public String getInitialBalance() {
+    public BigDecimal getInitialBalance() {
         return initialBalance;
     }
 
-    public String getUpperBound() {
+    public void setUpperBound(BigDecimal upperBound) {
+        this.upperBound = upperBound;
+    }
+
+    public void setInitialBalance(BigDecimal initialBalance) {
+        this.initialBalance = initialBalance;
+    }
+
+    public BigDecimal getUpperBound() {
         return upperBound;
     }
 }

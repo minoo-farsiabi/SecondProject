@@ -1,4 +1,7 @@
-import org.w3c.dom.*;
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 
 import javax.xml.parsers.DocumentBuilder;
@@ -6,6 +9,7 @@ import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 import java.io.File;
 import java.io.IOException;
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -14,13 +18,9 @@ import java.util.List;
  */
 public class ClientParser {
 
-    public ClientModel getClientModel() {
-        return clientModel;
-    }
+    public static ClientModel clientModel;
 
-    private static ClientModel clientModel;
-
-    public ClientParser() throws ExceptionPool {
+    public void parseTerminalFile() throws BusinessLogicException {
         try {
             File fXmlFile = new File("terminal.xml");
             DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
@@ -114,8 +114,10 @@ public class ClientParser {
                             if (transactionElement.hasAttribute("deposit")) {
                                 deposit = transactionElement.getAttribute("deposit");
                             }
+
+                            validateTransaction(id, type, amount, deposit);
                             if (id != null && type != null && amount != null && deposit != null) {
-                                Transaction transaction = new Transaction(id,type,amount,deposit);
+                                Transaction transaction = new Transaction(id, type, new BigDecimal(amount), new BigDecimal(deposit));
                                 allTransactions.add(transaction);
                             }
                         }
@@ -123,28 +125,40 @@ public class ClientParser {
                 }
             }
 
-            createClientIfPossible(terminalId,terminalType,serverIP,serverPort,outLogPath,allTransactions);
+            createClientIfPossible(terminalId, terminalType, serverIP, serverPort, outLogPath, allTransactions);
 
         } catch (ParserConfigurationException e) {
-            throw new ExceptionPool("Parser Configuration Problem!");
-        } catch (IOException e) {
-            throw new ExceptionPool("IOException");
+            e.printStackTrace();
         } catch (SAXException e) {
-            throw new ExceptionPool("SAXException");
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
         }
     }
 
-    private void createClientIfPossible(String terminalId, String terminalType, String serverIP, String serverPort, String outLogPath, List<Transaction> allTransactions) throws ExceptionPool {
-        if (terminalId == null) {
-            throw new ExceptionPool("Empty Terminal Id!");
+    private void validateTransaction(String id, String type, String amount, String deposit) throws BusinessLogicException {
+        if ((id == null) || (Long.parseLong(id) < 1)) {
+            throw new InvalidTransactionIdException();
+        } else if (type == null || (!type.equals("deposit") && !type.equals("withdraw"))) {
+            throw new InvalidTransactionTypeException();
+        } else if (amount == null || (new BigDecimal(amount).longValue() <= 0)) {
+            throw new InvalidTransactionAmountException();
+        } else if (deposit == null || (new BigDecimal(deposit).longValue() < 0)) {
+            throw new InvalidTransactionDepositException();
+        }
+    }
+
+    private void createClientIfPossible(String terminalId, String terminalType, String serverIP, String serverPort, String outLogPath, List<Transaction> allTransactions) throws BusinessLogicException {
+        if ((terminalId == null) || (Long.parseLong(terminalId) < 1)) {
+            throw new InvalidorEmptyTerminalIdException();
         } else if (terminalType == null) {
-            throw new ExceptionPool("Empty Terminal Type!");
+            throw new InvalidorEmptyTerminalTypeException();
         } else if (serverIP == null) {
-            throw new ExceptionPool("Empty Server IP!");
-        } else if (serverPort == null) {
-            throw new ExceptionPool("Empty Server Port!");
+            throw new InvalidorEmptyServerIPException();
+        } else if (serverPort == null || (Long.parseLong(serverPort) < 1)) {
+            throw new InvalidorEmptyServerPortException();
         } else if (outLogPath == null) {
-            throw new ExceptionPool("Empty OutLog Path!");
+            throw new EmptyOutLogPathException();
         } else {
             clientModel = new ClientModel(terminalId, terminalType, serverIP, serverPort, outLogPath, allTransactions);
         }
